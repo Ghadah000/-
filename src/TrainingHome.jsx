@@ -63,7 +63,7 @@ const quote = {
 
 const partners = [
   {
-    name: "اسم الجهة الأولى",
+    name: "جهة حكوميه",
     location: "الرياض",
     sector: "القطاع الحكومي",
     opportunities: 12,
@@ -74,9 +74,9 @@ const partners = [
     phone: "9200XXXXX",
   },
   {
-    name: "اسم الجهة الثانية",
+    name: "جهة تعليمية",
     location: "جدة",
-    sector: "القطاع الخاص",
+    sector: "القطاع التعليمي",
     opportunities: 8,
     trainees: 210,
     about: "نبذة مختصرة عن الجهة ومجال عملها.",
@@ -85,9 +85,9 @@ const partners = [
     phone: "9200XXXXX",
   },
   {
-    name: "اسم الجهة الثالثة",
+    name: "جهة منشأة",
     location: "الدمام",
-    sector: "القطاع الخاص",
+    sector: "القطاع المنشأة",
     opportunities: 5,
     trainees: 120,
     about: "نبذة مختصرة عن الجهة ومجال عملها.",
@@ -96,9 +96,9 @@ const partners = [
     phone: "9200XXXXX",
   },
   {
-    name: "اسم الجهة الرابعة",
+    name: "جهة حكومية",
     location: "أبها",
-    sector: "القطاع غير الربحي",
+    sector: "القطاع الحكومي",
     opportunities: 4,
     trainees: 95,
     about: "نبذة مختصرة عن الجهة ومجال عملها.",
@@ -107,9 +107,9 @@ const partners = [
     phone: "9200XXXXX",
   },
   {
-    name: "اسم الجهة الخامسة",
+    name: "جهة تعليمية",
     location: "المدينة المنورة",
-    sector: "القطاع الحكومي",
+    sector: "القطاع التعليمي",
     opportunities: 9,
     trainees: 180,
     about: "نبذة مختصرة عن الجهة ومجال عملها.",
@@ -201,21 +201,68 @@ const registerFields = {
     { name: "email", label: "البريد الإلكتروني", type: "email" },
     { name: "phone", label: "رقم الجوال", type: "tel" },
   ],
- company: [
-  { name: "orgName", label: "اسم الجهة" },
-  {
-    name: "orgType",
-    label: "نوع الجهة",
-    type: "select",
-    options: [
-      { value: "business", label: "منشأة" },
-      { value: "educational", label: "تعليمية" },
-      { value: "government", label: "حكومية" },
-    ],
-  },
-  { name: "email", label: "البريد الإلكتروني", type: "email" },
-  { name: "phone", label: "رقم الجوال", type: "tel" },
-], 
+  company: [
+    { name: "orgName", label: "اسم الجهة" },
+    {
+      name: "orgType",
+      label: "نوع الجهة",
+      type: "select",
+      options: [
+        { value: "business", label: "منشأة" },
+        { value: "educational", label: "تعليمية" },
+        { value: "government", label: "حكومية" },
+      ],
+    },
+    {
+      name: "govType",
+      label: "نوع الجهة الحكومية",
+      type: "select",
+      showIf: (form) => form.orgType === "government",
+      options: [
+        { value: "ministry", label: "وزارة" },
+        { value: "authority", label: "هيئة" },
+        { value: "public_org", label: "مؤسسة عامة" },
+        { value: "municipality", label: "أمانة / بلدية" },
+        { value: "emirate", label: "إمارة منطقة" },
+        { value: "hospital", label: "مستشفى / مركز صحي حكومي" },
+        { value: "gov_company", label: "شركة حكومية" },
+      ],
+    },
+    {
+      name: "eduType",
+      label: "نوع الجهة التعليمية",
+      type: "select",
+      showIf: (form) => form.orgType === "educational",
+      options: [
+        { value: "gov_university", label: "جامعة حكومية" },
+        { value: "private_university", label: "جامعة أهلية" },
+        { value: "college", label: "كلية" },
+        { value: "institute", label: "معهد" },
+        { value: "school", label: "مدرسة" },
+        { value: "training_center", label: "مركز تدريب" },
+        { value: "academy", label: "أكاديمية" },
+      ],
+    },
+    {
+      name: "bizType",
+      label: "نوع المنشأة",
+      type: "select",
+      showIf: (form) => form.orgType === "business",
+      options: [
+        { value: "company", label: "شركة" },
+        { value: "factory", label: "مصنع" },
+        { value: "bank", label: "بنك / مؤسسة مالية" },
+        { value: "hospital_private", label: "مستشفى / مركز صحي خاص" },
+        { value: "telecom", label: "اتصالات وتقنية" },
+        { value: "contracting", label: "مقاولات وإنشاءات" },
+        { value: "retail", label: "تجزئة وتجارة" },
+        { value: "nonprofit", label: "جمعية / منظمة غير ربحية" },
+        { value: "other", label: "أخرى" },
+      ],
+    },
+    { name: "email", label: "البريد الإلكتروني", type: "email" },
+    { name: "phone", label: "رقم الجوال", type: "tel" },
+  ],
   supervisor: [
     { name: "fullName", label: "الاسم الكامل" },
     { name: "college", label: "الكلية / القسم" },
@@ -375,7 +422,7 @@ function LoginModal({ open, onClose, role, setRole }) {
 
   const submitRegister = (e) => {
     e.preventDefault();
-    const fields = registerFields[role];
+    const fields = registerFields[role].filter((f) => !f.showIf || f.showIf(form));
 
     for (const f of fields) {
       if (!form[f.name]?.trim()) {
@@ -512,29 +559,33 @@ function LoginModal({ open, onClose, role, setRole }) {
           </form>
         ) : (
           <form onSubmit={submitRegister} className="mt-6 space-y-4">
-            {registerFields[role].map((f) => (
-  <Field key={f.name} label={f.label}>
-    {f.type === "select" ? (
-      <select
-        value={form[f.name] || ""}
-        onChange={(e) => set(f.name, e.target.value)}
-        className={inputCls}
-      >
-        <option value="">اختر...</option>
-        {f.options.map((o) => (
-          <option key={o} value={o}>{o}</option>
-        ))}
-      </select>
-    ) : (
-      <input
-        type={f.type || "text"}
-        value={form[f.name] || ""}
-        onChange={(e) => set(f.name, e.target.value)}
-        className={inputCls}
-      />
-    )}
-  </Field>
-))}
+            {registerFields[role]
+              .filter((f) => !f.showIf || f.showIf(form))
+              .map((f) => (
+                <Field key={f.name} label={f.label}>
+                  {f.type === "select" ? (
+                    <select
+                      value={form[f.name] || ""}
+                      onChange={(e) => set(f.name, e.target.value)}
+                      className={inputCls}
+                    >
+                      <option value="">اختر...</option>
+                      {f.options.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={f.type || "text"}
+                      value={form[f.name] || ""}
+                      onChange={(e) => set(f.name, e.target.value)}
+                      className={inputCls}
+                    />
+                  )}
+                </Field>
+              ))}
 
             <Field label="كلمة المرور (8 أحرف على الأقل)">
               <div className="flex rounded-lg border border-slate-300 focus-within:border-emerald-600">
@@ -855,7 +906,7 @@ export default function TrainingHome() {
       />
 
       <footer className="bg-emerald-950 py-6 text-center text-sm text-emerald-200">
-        © 2026 منصة التدريب التعاوني. جميع الحقوق محفوظة.
+        ©️ 2026 منصة التدريب التعاوني. جميع الحقوق محفوظة.
       </footer>
     </div>
   );
