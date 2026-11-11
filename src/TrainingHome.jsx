@@ -201,12 +201,21 @@ const registerFields = {
     { name: "email", label: "البريد الإلكتروني", type: "email" },
     { name: "phone", label: "رقم الجوال", type: "tel" },
   ],
-  company: [
-    { name: "orgName", label: "اسم الجهة" },
-    { name: "crNumber", label: "رقم السجل التجاري" },
-    { name: "email", label: "البريد الإلكتروني", type: "email" },
-    { name: "phone", label: "رقم الجوال", type: "tel" },
-  ],
+ company: [
+  { name: "orgName", label: "اسم الجهة" },
+  {
+    name: "orgType",
+    label: "نوع الجهة",
+    type: "select",
+    options: [
+      { value: "business", label: "منشأة" },
+      { value: "educational", label: "تعليمية" },
+      { value: "government", label: "حكومية" },
+    ],
+  },
+  { name: "email", label: "البريد الإلكتروني", type: "email" },
+  { name: "phone", label: "رقم الجوال", type: "tel" },
+], 
   supervisor: [
     { name: "fullName", label: "الاسم الكامل" },
     { name: "college", label: "الكلية / القسم" },
@@ -504,15 +513,28 @@ function LoginModal({ open, onClose, role, setRole }) {
         ) : (
           <form onSubmit={submitRegister} className="mt-6 space-y-4">
             {registerFields[role].map((f) => (
-              <Field key={f.name} label={f.label}>
-                <input
-                  type={f.type || "text"}
-                  value={form[f.name] || ""}
-                  onChange={(e) => set(f.name, e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-            ))}
+  <Field key={f.name} label={f.label}>
+    {f.type === "select" ? (
+      <select
+        value={form[f.name] || ""}
+        onChange={(e) => set(f.name, e.target.value)}
+        className={inputCls}
+      >
+        <option value="">اختر...</option>
+        {f.options.map((o) => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+    ) : (
+      <input
+        type={f.type || "text"}
+        value={form[f.name] || ""}
+        onChange={(e) => set(f.name, e.target.value)}
+        className={inputCls}
+      />
+    )}
+  </Field>
+))}
 
             <Field label="كلمة المرور (8 أحرف على الأقل)">
               <div className="flex rounded-lg border border-slate-300 focus-within:border-emerald-600">
